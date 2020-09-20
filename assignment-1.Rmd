@@ -1,7 +1,7 @@
 Peer review assignment 1 - Reproducible Research (Coursera)
 -----------------------------------------------------------
 
-First, I open activity.zip and read the csv, and put the date variable in a date format.
+Open activity.zip and read the csv, and put the date variable in a date format.
 ```{r}
 library(dplyr)
 library(ggplot2)
@@ -14,11 +14,6 @@ dim(df)
 str(df)
 df$date <- as.Date(df$date)
 df$interval <- as.POSIXct(sprintf("%04d",df$interval), format="%H%M")
-df$interval <- ifelse(nchar(df$interval)<2, paste0(0,df$interval), df$interval)
-df$interval <- ifelse(nchar(df$interval)<3, paste0(0,df$interval), df$interval)
-df$interval <- ifelse(nchar(df$interval)<4, paste0(0,df$interval), df$interval)
-df$interval2 <- hm(format(strptime(df$interval, format ="%H%M"), "%H:%M"))
-df$interval2
 str(df)
 ```
 
@@ -50,3 +45,15 @@ df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))]
 
 ```
 
+Calculate missing values in this dataset.
+```{r}
+sum(is.na.data.frame(df))
+
+df_imp <- df
+
+```
+
+Differences between weekends and weekdays.
+```{r}
+
+```
