@@ -1,0 +1,52 @@
+Peer review assignment 1 - Reproducible Research (Coursera)
+-----------------------------------------------------------
+
+First, I open activity.zip and read the csv, and put the date variable in a date format.
+```{r}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+csv <- unzip('activity.zip')
+df <- read.csv(csv)
+head(df)
+dim(df)
+str(df)
+df$date <- as.Date(df$date)
+df$interval <- as.POSIXct(sprintf("%04d",df$interval), format="%H%M")
+df$interval <- ifelse(nchar(df$interval)<2, paste0(0,df$interval), df$interval)
+df$interval <- ifelse(nchar(df$interval)<3, paste0(0,df$interval), df$interval)
+df$interval <- ifelse(nchar(df$interval)<4, paste0(0,df$interval), df$interval)
+df$interval2 <- hm(format(strptime(df$interval, format ="%H%M"), "%H:%M"))
+df$interval2
+str(df)
+```
+
+Calculate and plot the total number of steps per day.
+```{r}
+df_day <- df %>% group_by(date) %>% 
+    summarise(sum(steps, na.rm = TRUE), .groups='drop')
+df_day$steps <- df_day$`sum(steps, na.rm = TRUE)`
+
+ggplot(df_day) +
+    geom_histogram(aes(date, steps), stat = 'identity', fill = 'royalblue')
+
+mean(df_day$steps, na.rm = TRUE)
+median(df_day$steps, na.rm = TRUE)
+```
+
+Calculate average number of steps per time interval and make time series plot.
+```{r}
+df_time <- df %>% group_by(interval) %>% 
+    summarise(sum(steps, na.rm = TRUE), .groups='drop')
+df_time$steps <- df_time$`sum(steps, na.rm = TRUE)`
+
+df_time
+ggplot(df_time) +
+    geom_line(aes(interval, steps), fill = 'royalblue') +
+    scale_x_datetime(date_label = "%H", date_breaks = "1 hour")
+
+df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))]
+
+```
+
