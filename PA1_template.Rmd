@@ -13,6 +13,8 @@ Open activity.zip and read the csv, explore the data.
 ```{r}
 csv <- unzip('activity.zip')
 df <- read.csv(csv)
+head(df)
+dim(df)
 str(df)
 ```
 
@@ -75,6 +77,18 @@ missings <- sum(is.na.data.frame(df))
 ```
 There are `r missings[1]` missing values in the data set.
 
+Now we explore where the values are missing - per time interval and per date.
+```{r}
+df_missing <- df[is.na(df$steps),]
+ggplot(df_missing) +
+    geom_bar(aes(interval)) +
+    scale_x_datetime(date_label = "%H", date_breaks = "1 hour")
+ggplot(df_missing) +
+    geom_bar(aes(date))
+```
+
+The missing values originate from 8 dates that miss all values.
+
 Imputing missing values with mean for the associated time interval:
 ```{r}
 df_imp <- df
@@ -98,8 +112,8 @@ ggplot(df_day2) +
 
 Calculating the new mean and median for the imputed data set:
 ```{r}
-mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits=0)
-median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits=0)
+mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits = 0)
+median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits = 0)
 ```
 The mean was `r mean[1]` and became `r mean_imp [1]` after imputing; the median was `r median [1]` and became `r median_imp[1]` after imputing.
 

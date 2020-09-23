@@ -15,6 +15,28 @@ Open activity.zip and read the csv, explore the data.
 ```r
 csv <- unzip('activity.zip')
 df <- read.csv(csv)
+head(df)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
+dim(df)
+```
+
+```
+## [1] 17568     3
+```
+
+```r
 str(df)
 ```
 
@@ -115,6 +137,26 @@ missings <- sum(is.na.data.frame(df))
 ```
 There are 2304 missing values in the data set.
 
+Now we explore where the values are missing - per time interval and per date.
+
+```r
+df_missing <- df[is.na(df$steps),]
+ggplot(df_missing) +
+    geom_bar(aes(interval)) +
+    scale_x_datetime(date_label = "%H", date_breaks = "1 hour")
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+
+```r
+ggplot(df_missing) +
+    geom_bar(aes(date))
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-2.png)
+
+The missing values originate from 8 dates that miss all values.
+
 Imputing missing values with mean for the associated time interval:
 
 ```r
@@ -142,13 +184,13 @@ ggplot(df_day2) +
     geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
 Calculating the new mean and median for the imputed data set:
 
 ```r
-mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits=0)
-median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits=0)
+mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits = 0)
+median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits = 0)
 ```
 The mean was 9354 and became 10766 after imputing; the median was 10395 and became 10766 after imputing.
 
@@ -197,4 +239,4 @@ ggplot(df_time2) +
     labs(title='Average number of steps per time interval - weekdays versus weekend days')
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
