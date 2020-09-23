@@ -98,8 +98,8 @@ ggplot(df_day2) +
 
 Calculating the new mean and median for the imputed data set:
 ```{r}
-mean_imp <- mean(df_day2$steps, na.rm = TRUE)
-median_imp <- median(df_day2$steps, na.rm = TRUE)
+mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits=0)
+median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits=0)
 ```
 The mean was `r mean[1]` and became `r mean_imp [1]` after imputing; the median was `r median [1]` and became `r median_imp[1]` after imputing.
 

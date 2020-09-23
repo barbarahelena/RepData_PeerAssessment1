@@ -56,7 +56,7 @@ ggplot(df_day) +
     geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
 
 Calculate the mean and median steps per day:
 
@@ -97,7 +97,7 @@ ggplot(df_time) +
     labs(title='Average number of steps per time interval')
 ```
 
-![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
 
 What is the time interval with the most average steps?
 
@@ -142,15 +142,15 @@ ggplot(df_day2) +
     geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
 ```
 
-![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-24-1.png)
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
 
 Calculating the new mean and median for the imputed data set:
 
 ```r
-mean_imp <- mean(df_day2$steps, na.rm = TRUE)
-median_imp <- median(df_day2$steps, na.rm = TRUE)
+mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits=0)
+median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits=0)
 ```
-The mean was 9354 and became 10766.1886792 after imputing; the median was 10395 and became 10766.1886792 after imputing.
+The mean was 9354 and became 10766 after imputing; the median was 10395 and became 10766 after imputing.
 
 ## Differences between week and weekend days
 To examine the differences between weekdays and weekend days, we make a new factor variable 'week'.
@@ -197,4 +197,4 @@ ggplot(df_time2) +
     labs(title='Average number of steps per time interval - weekdays versus weekend days')
 ```
 
-![plot of chunk unnamed-chunk-28](figure/unnamed-chunk-28-1.png)
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
