@@ -8,7 +8,7 @@ library(ggplot2)
 library(lubridate)
 ```
 
-# Opening and tidying the data.
+## Opening and tidying the data.
 Open activity.zip and read the csv, explore the data.
 ```{r}
 csv <- unzip('activity.zip')
@@ -25,8 +25,8 @@ df$interval <- as.POSIXct(sprintf("%04d",df$interval), format="%H%M")
 str(df)
 ```
 
-# Number of steps per day.
-Calculate total number of steps per day.
+## Number of steps per day.
+We calculate the total number of steps per day.
 ```{r}
 df_day <- df %>% group_by(date) %>% 
     summarise(sum(steps, na.rm = TRUE), .groups='drop')
@@ -39,15 +39,15 @@ ggplot(df_day) +
     geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
 ```
 
-Show the mean and median steps per day.
+Calculate the mean and median steps per day:
 ```{r}
-mean <- mean(df_day$steps, na.rm = TRUE)
-median <- median(df_day$steps, na.rm = TRUE)
+mean <- round(mean(df_day$steps, na.rm = TRUE), digits = 0)
+median <- round(median(df_day$steps, na.rm = TRUE), digits = 0)
 ```
-The mean number of steps per day is `mean` and the median number of steps per day is `median`.
+The mean number of steps per day is `r mean[1]` and the median number of steps per day is `r median[1]`.
 
-# Number of steps per time interval.
-Calculate average number of steps per time interval.
+## Number of steps per time interval.
+First, we calculate the average number of steps per time interval.
 ```{r}
 df_time <- df %>% group_by(interval) %>% 
     summarise(mean(steps, na.rm = TRUE), .groups='drop')
@@ -55,7 +55,7 @@ df_time$steps <- df_time$`mean(steps, na.rm = TRUE)`
 head(df_time)
 ```
 
-Time series plot for the average number of steps per time interval.
+Time series plot for the average number of steps per time interval:
 ```{r}
 ggplot(df_time) +
     geom_line(aes(interval, steps), color = 'royalblue') +
@@ -68,16 +68,16 @@ What is the time interval with the most average steps?
 begin <- format(df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))], format = "%H:%M")
 end <- format(df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))]+(5*60), format = "%H:%M")
 ```
-The time interval between `begin` and `end` has the most average steps.
+The time interval between `r begin[1]` and `r end[1]` has the most average steps.
 
-# Imputing the data set
-Calculate number of missing values in this dataset.
+## Imputing the missing values
+First, we calculate the number of missing values in this data set.
 ```{r}
 missings <- sum(is.na.data.frame(df))
 ```
-There are `missings` missing values in the data set.
+There are `r missings[1]` missing values in the data set.
 
-Explore where the values are missing.
+Now we explore where the values are missing - per time interval and per date.
 ```{r}
 df_missing <- df[is.na(df$steps),]
 ggplot(df_missing) +
@@ -86,9 +86,10 @@ ggplot(df_missing) +
 ggplot(df_missing) +
     geom_bar(aes(date))
 ```
+
 The missing values originate from 8 dates that miss all values.
 
-Imputing missing values with mean for the associated time interval.
+Imputing missing values with mean for the associated time interval:
 ```{r}
 df_imp <- df
 for (a in which(is.na(df_imp$steps))) {
@@ -99,7 +100,7 @@ for (a in which(is.na(df_imp$steps))) {
 missings_imp <- sum(is.na.data.frame(df_imp)) # Checking if there are missings left
 print(ifelse(missings_imp==0, 'There are no missing values left', 'There are missing values left'))
 ```
-Calculating the new total steps per day, and plotting the number of steps.
+Now we can calculate the new total steps per day, and plot the number of steps.
 ```{r}
 df_day2 <- df_imp %>% group_by(date) %>% 
     summarise(sum(steps, na.rm = TRUE), .groups='drop')
@@ -109,14 +110,14 @@ ggplot(df_day2) +
     geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
 ```
 
-Calculating the new mean and median for the imputed data set.
+Calculating the new mean and median for the imputed data set:
 ```{r}
 mean_imp <- mean(df_day2$steps, na.rm = TRUE)
 median_imp <- median(df_day2$steps, na.rm = TRUE)
 ```
-The mean was `mean` and became `mean_imp` after imputing; the median was `median` and became `median_imp` after imputing.
+The mean was `r mean[1]` and became `r mean_imp [1]` after imputing; the median was `r median [1]` and became `r median_imp[1]` after imputing.
 
-# Differences between week and weekend days
+## Differences between week and weekend days
 To examine the differences between weekdays and weekend days, we make a new factor variable 'week'.
 ```{r}
 df_imp$week <- ifelse(weekdays(df_imp$date)=='zaterdag' |weekdays(df_imp$date)=='zondag', 'weekend', 'weekday')
