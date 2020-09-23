@@ -137,7 +137,7 @@ missings <- sum(is.na.data.frame(df))
 ```
 There are 2304 missing values in the data set.
 
-Now we explore where the values are missing - per time interval and per date.
+Now we explore from which dates there are values missing.
 
 ```r
 df_missing <- df[is.na(df$steps),]

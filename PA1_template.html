@@ -329,7 +329,7 @@ end &lt;- format(df_time$interval[which(df_time$steps==max(df_time$steps, na.rm 
 
 <p>There are 2304 missing values in the data set.</p>
 
-<p>Now we explore where the values are missing - per time interval and per date.</p>
+<p>Now we explore from which dates there are values missing.</p>
 
 <pre><code class="r">df_missing &lt;- df[is.na(df$steps),]
 ggplot(df_missing) +
