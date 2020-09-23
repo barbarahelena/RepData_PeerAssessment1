@@ -67,18 +67,23 @@ We calculate the total number of steps per day.
 
 ```r
 df_day <- df %>% group_by(date) %>% 
-    summarise(sum(steps, na.rm = TRUE), .groups='drop')
-df_day$steps <- df_day$`sum(steps, na.rm = TRUE)`
+    summarise(sum(steps, na.rm = FALSE), .groups='drop')
+df_day$steps <- df_day$`sum(steps, na.rm = FALSE)`
 ```
 
 Plot the total number of steps per day with a ggplot histogram.
 
 ```r
 ggplot(df_day) +
-    geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
+    geom_histogram(aes(steps), binwidth=2500, fill = 'royalblue')+
+    labs(x='Total number of steps', y='Number of days', title='Histogram of total number of steps')
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+```
+## Warning: Removed 8 rows containing non-finite values (stat_bin).
+```
+
+![plot of chunk unnamed-chunk-30](figure/unnamed-chunk-30-1.png)
 
 Calculate the mean and median steps per day:
 
@@ -86,7 +91,7 @@ Calculate the mean and median steps per day:
 mean <- round(mean(df_day$steps, na.rm = TRUE), digits = 0)
 median <- round(median(df_day$steps, na.rm = TRUE), digits = 0)
 ```
-The mean number of steps per day is 9354 and the median number of steps per day is 10395.
+The mean number of steps per day is 10766 and the median number of steps per day is 10765.
 
 ## Number of steps per time interval.
 First, we calculate the average number of steps per time interval.
@@ -119,7 +124,7 @@ ggplot(df_time) +
     labs(title='Average number of steps per time interval')
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-33](figure/unnamed-chunk-33-1.png)
 
 What is the time interval with the most average steps?
 
@@ -145,7 +150,7 @@ ggplot(df_missing) +
     geom_bar(aes(date))
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![plot of chunk unnamed-chunk-36](figure/unnamed-chunk-36-1.png)
 
 The missing values originate from 8 dates that miss all 288 values.
 
@@ -169,14 +174,15 @@ Now we can calculate the new total steps per day, and plot the number of steps.
 
 ```r
 df_day2 <- df_imp %>% group_by(date) %>% 
-    summarise(sum(steps, na.rm = TRUE), .groups='drop')
-df_day2$steps <- df_day2$`sum(steps, na.rm = TRUE)`
+    summarise(sum(steps, na.rm = FALSE), .groups='drop')
+df_day2$steps <- df_day2$`sum(steps, na.rm = FALSE)`
 
 ggplot(df_day2) +
-    geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
+    geom_histogram(aes(steps), binwidth=2500, fill = 'royalblue')+
+    labs(x='Total number of steps', y='Number of days', title='Histogram of total number of steps')
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![plot of chunk unnamed-chunk-38](figure/unnamed-chunk-38-1.png)
 
 Calculating the new mean and median for the imputed data set:
 
@@ -184,7 +190,7 @@ Calculating the new mean and median for the imputed data set:
 mean_imp <- round(mean(df_day2$steps, na.rm = TRUE), digits = 0)
 median_imp <- round(median(df_day2$steps, na.rm = TRUE), digits = 0)
 ```
-The mean was 9354 and became 10766 after imputing; the median was 10395 and became 10766 after imputing.
+The mean was 10766 and became 10766 after imputing; the median was 10765 and became 10766 after imputing.
 
 ## Differences between week and weekend days
 To examine the differences between weekdays and weekend days, we make a new factor variable 'week'.
@@ -231,4 +237,4 @@ ggplot(df_time2) +
     labs(title='Average number of steps per time interval - weekdays versus weekend days')
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
+![plot of chunk unnamed-chunk-42](figure/unnamed-chunk-42-1.png)
