@@ -47,7 +47,7 @@ str(df)
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
-Put the date variable in a date format, and time in a POSIX format.
+Put the date variable in a date format, and time in a POSIXct format.
 
 ```r
 df$date <- as.Date(df$date)

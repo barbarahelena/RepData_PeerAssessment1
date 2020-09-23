@@ -243,7 +243,7 @@ head(df)
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 </code></pre>
 
-<p>Put the date variable in a date format, and time in a POSIX format.</p>
+<p>Put the date variable in a date format, and time in a POSIXct format.</p>
 
 <pre><code class="r">df$date &lt;- as.Date(df$date)
 df$interval &lt;- as.POSIXct(sprintf(&quot;%04d&quot;,df$interval), format=&quot;%H%M&quot;) 

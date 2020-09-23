@@ -18,7 +18,7 @@ dim(df)
 str(df)
 ```
 
-Put the date variable in a date format, and time in a POSIX format.
+Put the date variable in a date format, and time in a POSIXct format.
 ```{r}
 df$date <- as.Date(df$date)
 df$interval <- as.POSIXct(sprintf("%04d",df$interval), format="%H%M") 
