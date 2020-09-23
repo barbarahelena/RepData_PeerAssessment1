@@ -142,20 +142,12 @@ Now we explore where the values are missing - per time interval and per date.
 ```r
 df_missing <- df[is.na(df$steps),]
 ggplot(df_missing) +
-    geom_bar(aes(interval)) +
-    scale_x_datetime(date_label = "%H", date_breaks = "1 hour")
+    geom_bar(aes(date))
 ```
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
 
-```r
-ggplot(df_missing) +
-    geom_bar(aes(date))
-```
-
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-2.png)
-
-The missing values originate from 8 dates that miss all values.
+The missing values originate from 8 dates that miss all 288 values.
 
 Imputing missing values with mean for the associated time interval:
 

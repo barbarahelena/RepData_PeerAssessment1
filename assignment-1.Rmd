@@ -1,59 +1,142 @@
 Peer review assignment 1 - Reproducible Research (Coursera)
 -----------------------------------------------------------
 
-Open activity.zip and read the csv, and put the date variable in a date format.
+Libraries that are needed are as follows:
 ```{r}
 library(dplyr)
 library(ggplot2)
 library(lubridate)
+```
 
+# Opening and tidying the data.
+Open activity.zip and read the csv, explore the data.
+```{r}
 csv <- unzip('activity.zip')
 df <- read.csv(csv)
 head(df)
 dim(df)
 str(df)
+```
+
+Put the date variable in a date format, and time in a POSIX format.
+```{r}
 df$date <- as.Date(df$date)
-df$interval <- as.POSIXct(sprintf("%04d",df$interval), format="%H%M")
+df$interval <- as.POSIXct(sprintf("%04d",df$interval), format="%H%M") 
 str(df)
 ```
 
-Calculate and plot the total number of steps per day.
+# Number of steps per day.
+Calculate total number of steps per day.
 ```{r}
 df_day <- df %>% group_by(date) %>% 
     summarise(sum(steps, na.rm = TRUE), .groups='drop')
 df_day$steps <- df_day$`sum(steps, na.rm = TRUE)`
-
-ggplot(df_day) +
-    geom_histogram(aes(date, steps), stat = 'identity', fill = 'royalblue')
-
-mean(df_day$steps, na.rm = TRUE)
-median(df_day$steps, na.rm = TRUE)
 ```
 
-Calculate average number of steps per time interval and make time series plot.
+Plot the total number of steps per day with a ggplot histogram.
+```{r}
+ggplot(df_day) +
+    geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
+```
+
+Show the mean and median steps per day.
+```{r}
+mean <- mean(df_day$steps, na.rm = TRUE)
+median <- median(df_day$steps, na.rm = TRUE)
+```
+The mean number of steps per day is `mean` and the median number of steps per day is `median`.
+
+# Number of steps per time interval.
+Calculate average number of steps per time interval.
 ```{r}
 df_time <- df %>% group_by(interval) %>% 
-    summarise(sum(steps, na.rm = TRUE), .groups='drop')
-df_time$steps <- df_time$`sum(steps, na.rm = TRUE)`
+    summarise(mean(steps, na.rm = TRUE), .groups='drop')
+df_time$steps <- df_time$`mean(steps, na.rm = TRUE)`
+head(df_time)
+```
 
-df_time
+Time series plot for the average number of steps per time interval.
+```{r}
 ggplot(df_time) +
-    geom_line(aes(interval, steps), fill = 'royalblue') +
+    geom_line(aes(interval, steps), color = 'royalblue') +
+    scale_x_datetime(date_label = "%H", date_breaks = "1 hour") +
+    labs(title='Average number of steps per time interval')
+```
+
+What is the time interval with the most average steps?
+```{r}
+begin <- format(df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))], format = "%H:%M")
+end <- format(df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))]+(5*60), format = "%H:%M")
+```
+The time interval between `begin` and `end` has the most average steps.
+
+# Imputing the data set
+Calculate number of missing values in this dataset.
+```{r}
+missings <- sum(is.na.data.frame(df))
+```
+There are `missings` missing values in the data set.
+
+Explore where the values are missing.
+```{r}
+df_missing <- df[is.na(df$steps),]
+ggplot(df_missing) +
+    geom_bar(aes(interval)) +
     scale_x_datetime(date_label = "%H", date_breaks = "1 hour")
-
-df_time$interval[which(df_time$steps==max(df_time$steps, na.rm = TRUE))]
-
+ggplot(df_missing) +
+    geom_bar(aes(date))
 ```
+The missing values originate from 8 dates that miss all values.
 
-Calculate missing values in this dataset.
+Imputing missing values with mean for the associated time interval.
 ```{r}
-sum(is.na.data.frame(df))
-
 df_imp <- df
+for (a in which(is.na(df_imp$steps))) {
+    int <- format(df_imp$interval[a], format="%Y-%m-%d %H:%M:%S")
+    mean_int <- mean(df_imp$steps[which(df_imp$interval == int)], na.rm=TRUE)
+    df_imp$steps[a] <- mean_int
+}
+missings_imp <- sum(is.na.data.frame(df_imp)) # Checking if there are missings left
+print(ifelse(missings_imp==0, 'There are no missing values left', 'There are missing values left'))
+```
+Calculating the new total steps per day, and plotting the number of steps.
+```{r}
+df_day2 <- df_imp %>% group_by(date) %>% 
+    summarise(sum(steps, na.rm = TRUE), .groups='drop')
+df_day2$steps <- df_day2$`sum(steps, na.rm = TRUE)`
 
+ggplot(df_day2) +
+    geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
 ```
 
-Differences between weekends and weekdays.
+Calculating the new mean and median for the imputed data set.
 ```{r}
+mean_imp <- mean(df_day2$steps, na.rm = TRUE)
+median_imp <- median(df_day2$steps, na.rm = TRUE)
+```
+The mean was `mean` and became `mean_imp` after imputing; the median was `median` and became `median_imp` after imputing.
 
+# Differences between week and weekend days
+To examine the differences between weekdays and weekend days, we make a new factor variable 'week'.
+```{r}
+df_imp$week <- ifelse(weekdays(df_imp$date)=='zaterdag' |weekdays(df_imp$date)=='zondag', 'weekend', 'weekday')
+df_imp$week <- as.factor(df_imp$week)
+summary(df_imp$week)
+```
+
+And calculate the averages over time intervals for weekdays and weekend days separately.
+```{r}
+df_time2 <- df_imp %>% group_by(interval, week) %>% 
+    summarise(mean(steps, na.rm = TRUE), .groups='drop')
+df_time2$steps <- df_time2$`mean(steps, na.rm = TRUE)`
+head(df_time2)
+```
+
+Finally, we plot the average steps in time series plots for weekdays vs weekend days.
+```{r}
+ggplot(df_time2) +
+    geom_line(aes(interval, steps), color = 'royalblue') +
+    scale_x_datetime(date_label = "%H", date_breaks = "4 hours") +
+    facet_wrap(~week) +
+    labs(title='Average number of steps per time interval - weekdays versus weekend days')
 ```
