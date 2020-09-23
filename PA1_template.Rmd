@@ -29,14 +29,15 @@ str(df)
 We calculate the total number of steps per day.
 ```{r}
 df_day <- df %>% group_by(date) %>% 
-    summarise(sum(steps, na.rm = TRUE), .groups='drop')
-df_day$steps <- df_day$`sum(steps, na.rm = TRUE)`
+    summarise(sum(steps, na.rm = FALSE), .groups='drop')
+df_day$steps <- df_day$`sum(steps, na.rm = FALSE)`
 ```
 
 Plot the total number of steps per day with a ggplot histogram.
 ```{r}
 ggplot(df_day) +
-    geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
+    geom_histogram(aes(steps), binwidth=2500, fill = 'royalblue')+
+    labs(x='Total number of steps', y='Number of days', title='Histogram of total number of steps')
 ```
 
 Calculate the mean and median steps per day:
@@ -100,11 +101,12 @@ print(ifelse(missings_imp==0, 'There are no missing values left', 'There are mis
 Now we can calculate the new total steps per day, and plot the number of steps.
 ```{r}
 df_day2 <- df_imp %>% group_by(date) %>% 
-    summarise(sum(steps, na.rm = TRUE), .groups='drop')
-df_day2$steps <- df_day2$`sum(steps, na.rm = TRUE)`
+    summarise(sum(steps, na.rm = FALSE), .groups='drop')
+df_day2$steps <- df_day2$`sum(steps, na.rm = FALSE)`
 
 ggplot(df_day2) +
-    geom_bar(aes(date, steps), stat = 'identity', position='identity', fill = 'royalblue')
+    geom_histogram(aes(steps), binwidth=2500, fill = 'royalblue')+
+    labs(x='Total number of steps', y='Number of days', title='Histogram of total number of steps')
 ```
 
 Calculating the new mean and median for the imputed data set:
